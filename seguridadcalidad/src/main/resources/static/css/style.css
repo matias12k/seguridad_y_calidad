@@ -1,0 +1,62 @@
+:root {
+    --bg-dark: #0f1015;
+    --card-bg: #181a20;
+    --accent: #00ffcc;
+    --primary: #9b59b6;
+    --text: #eaeaea;
+}
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text);
+}
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #121318;
+    padding: 15px 35px;
+    border-bottom: 2px solid var(--accent);
+}
+nav h1 { margin: 0; color: var(--accent); font-size: 1.6rem; letter-spacing: 1px; }
+nav a, nav button, .filters button {
+    color: var(--text);
+    text-decoration: none;
+    background: none;
+    border: 1px solid var(--accent);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+nav a:hover, nav button:hover, .filters button:hover {
+    background: var(--accent);
+    color: #000;
+}
+.banner {
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1400');
+    background-size: cover;
+    background-position: center;
+    padding: 65px 20px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+}
+.banner h2 { font-size: 2.2rem; margin-bottom: 8px; color: #fff; }
+.banner p { color: var(--accent); font-weight: 500; font-size: 1.1rem; }
+.container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+.filters { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
+input, select {
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+.card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #282a32; display: flex; flex-direction: column; }
+.card img { width: 100%; height: 170px; object-fit: cover; }
+.card-content { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+.card-content h3 { margin: 10px 0; color: var(--accent); font-size: 1.25rem; }
+.badge { align-self: flex-start; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; background: var(--primary); font-weight: bold; }

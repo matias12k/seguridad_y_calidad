@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GamerEvents - Portal Oficial de Torneos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <h1>⚡ GamerEvents</h1>
+        <div id="nav-actions">
+            <a th:href="@{/login}" id="btn-login">Iniciar Sesión</a>
+        </div>
+    </nav>
+
+    <div class="banner">
+        <h2>Encuentra y Participa en los Mejores Torneos Gamer</h2>
+        <p>Aviso Comercial: ¡Hasta 40% OFF en Monitores 144Hz y Periféricos con el código DUOCGAMER!</p>
+    </div>
+
+    <div class="container">
+        <div class="filters">
+            <input type="text" id="filtro-texto" placeholder="Buscar por torneo, videojuego, ciudad o país..." style="flex: 1;">
+            <select id="filtro-modalidad">
+                <option value="">Todas las modalidades</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Online">Online</option>
+            </select>
+            <button onclick="buscarEventos()">Buscar</button>
+        </div>
+
+        <h2>Eventos Gamer Recientes y Populares</h2>
+        <div id="eventos-grid" class="grid">
+            <div class="card" th:each="ev : ${eventosDestacados}">
+                <img th:src="${ev.fotoUrl}" th:alt="${ev.nombre}">
+                <div class="card-content">
+                    <span class="badge" th:text="${ev.modalidad}">Presencial</span>
+                    <h3 th:text="${ev.nombre}">Nombre Evento</h3>
+                    <p><b>Videojuego:</b> <span th:text="${ev.videojuego}">Juego</span></p>
+                    <p><b>Categoría:</b> <span th:text="${ev.categoria}">Categoría</span></p>
+                    <p><b>Lugar:</b> <span th:text="${ev.ciudad} + ', ' + ${ev.pais}">Ubicación</span></p>
+                    <p><b>Fecha:</b> <span th:text="${ev.fecha}">Fecha</span></p>
+                    <button th:onclick="'verDetalle(' + ${ev.id} + ')'" style="width: 100%; margin-top: auto;">Ver Detalle Completo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwt_token');
+            const user = localStorage.getItem('jwt_username');
+            if (token && user) {
+                document.getElementById('nav-actions').innerHTML = `
+                    <span style="color: #00ffcc; margin-right: 15px;">Jugador: <b>${user}</b></span>
+                    <button onclick="logout()">Cerrar Sesión</button>
+                `;
+            }
+        });
+
+        async function buscarEventos() {
+            const query = document.getElementById('filtro-texto').value;
+            const modalidad = document.getElementById('filtro-modalidad').value;
+            const res = await fetch(`/api/eventos/public/buscar?query=${encodeURIComponent(query)}&modalidad=${encodeURIComponent(modalidad)}`);
+            const data = await res.json();
+            
+            const grid = document.getElementById('eventos-grid');
+            grid.innerHTML = '';
+            data.forEach(ev => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${ev.fotoUrl}" alt="${ev.nombre}">
+                        <div class="card-content">
+                            <span class="badge">${ev.modalidad}</span>
+                            <h3>${ev.nombre}</h3>
+                            <p><b>Videojuego:</b> ${ev.videojuego}</p>
+                            <p><b>Categoría:</b> ${ev.categoria}</p>
+                            <p><b>Lugar:</b> ${ev.ciudad}, ${ev.pais}</p>
+                            <p><b>Fecha:</b> ${ev.fecha}</p>
+                            <button onclick="verDetalle(${ev.id})" style="width: 100%; margin-top: auto;">Ver Detalle Completo</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function verDetalle(id) {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                alert("Esta sección es privada. Debes identificarte con tu usuario gamer.");
+                window.location.href = '/login';
+                return;
+            }
+            window.location.href = `/detalle?id=${id}`;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

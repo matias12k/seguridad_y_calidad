@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Privado del Torneo - GamerEvents</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav>
+        <h1>⚡ GamerEvents</h1>
+        <a th:href="@{/eventos}">Volver a Torneos</a>
+    </nav>
+    <div class="container" id="detalle-container" style="max-width: 800px;">
+        <p>Cargando información segura del evento...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                alert("Acceso denegado: Requiere token JWT de autenticación.");
+                window.location.href = '/login';
+                return;
+            }
+
+            const id = new URLSearchParams(window.location.search).get('id');
+            const res = await fetch(`/api/eventos/privado/${id}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (res.status === 401 || res.status === 403) {
+                alert("Sesión expirada o token no autorizado.");
+                localStorage.clear();
+                window.location.href = '/login';
+                return;
+            }
+
+            const ev = await res.json();
+            document.getElementById('detalle-container').innerHTML = `
+                <div class="card" style="padding: 25px;">
+                    <img src="${ev.fotoUrl}" style="height: 350px; width: 100%; object-fit: cover; border-radius: 6px;">
+                    <h1 style="color: var(--accent); margin-top: 20px;">${ev.nombre}</h1>
+                    <p><b>Videojuego:</b> ${ev.videojuego} | <b>Categoría:</b> ${ev.categoria}</p>
+                    <p><b>Horario:</b> ${ev.fecha} a las ${ev.hora} hrs</p>
+                    <p><b>Modalidad:</b> ${ev.modalidad} (${ev.ciudad}, ${ev.pais})</p>
+                    <p><b>Organizado por:</b> ${ev.organizador}</p>
+                    <hr style="border: 0.5px solid #333; margin: 20px 0;">
+                    <h3>Descripción Oficial</h3>
+                    <p style="line-height: 1.6;">${ev.descripcion}</p>
+                    <h3>Requisitos de Participación</h3>
+                    <p style="line-height: 1.6; color: #bbb;">${ev.requisitos}</p>
+                    <div style="margin-top: 25px; padding: 15px; background: #121318; border-left: 4px solid var(--accent);">
+                        <b>Enlace Oficial de Inscripción:</b><br>
+                        <a href="${ev.enlaceInscripcion}" target="_blank" style="color: var(--accent); word-break: break-all;">${ev.enlaceInscripcion}</a>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
